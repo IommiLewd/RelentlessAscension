@@ -7,7 +7,8 @@ class Player extends Phaser.Sprite {
         this.game.physics.arcade.enableBody(this);
         this.body.collideWorldBounds = true;
         this.body.gravity.y = 300;
-
+        this.health = 3;
+        this.energy = 100;
         this.torso = this.game.add.sprite(-2, -14, 'torsos');
         this.torso.anchor.setTo(0.5);
         this.addChild(this.torso);
@@ -18,11 +19,52 @@ class Player extends Phaser.Sprite {
         this._initLaser();
         this._addAnimations();
         this.onBarrier = false;
-        this._addMarker();
+        this.healthArray = [];
         this._initBullets();
+        this._initHealth();
+        this._initEnergy();
     }
 
 
+
+    _initEnergy() {
+        this.energyBar = this.game.add.sprite(158, 10, 'energy');
+        this.energyBar.fixedToCamera = true;
+
+    }
+    
+    _energyHandler(amount) {
+        if(this.energy >= 0){
+        this.energy -= amount;
+       this.energyBar.width =  this.energy/100 * this.energy;
+    }
+    }
+
+    _initHealth() {
+        var distance = 30;
+        for (var i = 0; i < 3; i++) {
+            this.healthPoint = this.game.add.sprite(distance, 10, 'health');
+            distance += 34;
+            this.healthPoint.fixedToCamera = true;
+            this.healthArray.push(this.healthPoint);
+        }
+    }
+
+
+    _damageTaken() {
+        if (this.health >= 1) {
+            this.health--;
+            this.healthArray[this.health].visible = false;
+        }
+    }
+
+    _medkit() {
+        if (this.health <= 3) {
+            this.health++;
+            this.healthArray[this.health].visible = true;
+
+        }
+    }
 
     _addController() {
         this._left = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
@@ -34,8 +76,8 @@ class Player extends Phaser.Sprite {
 
     }
 
-
     _initBullets() {
+     
         this.bullets = this.game.add.group();
         this.bullets.enableBody = true;
         this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
@@ -47,21 +89,21 @@ class Player extends Phaser.Sprite {
 
         //  --- Disable Gravity for Each Bullet
         this.bullets.forEach(function (L) {
-              L.body.allowGravity = false;
-//                        L.body.gravity.y = 900;
-//                        L.rotation = 30;
+            L.body.allowGravity = false;
+            //                        L.body.gravity.y = 900;
+            //                        L.rotation = 30;
         });
         this._nextFire = 200;
 
 
     }
     _fireMachinegun() {
-        /*this.player._fireWeapon();*/
+  
         this.fireRate = 70;
         this.bullet;
         this.bullets.setAll('frame', 0);
         this.randomNumber = (Math.random() - 0.5) * 2;
-        if (this.game.time.now > this._nextFire && this.bullets.countDead() > 4) {
+        if (this.game.time.now > this._nextFire && this.bullets.countDead() > 4 && this.energy >= 0) {
             this._nextFire = this.game.time.now + this.fireRate;
             this.bullet = this.bullets.getFirstDead();
             this.bullet.reset(this.x, this.y - 10);
@@ -71,27 +113,16 @@ class Player extends Phaser.Sprite {
         }
     }
 
-    isDead() {
-        this.x = -2000;
-        this.kill();
-    }
-
     _addAnimations() {
         this.torso.animations.add('normal', [0], 10, true);
         this.torso.animations.add('upward', [1], 10, true);
         this.torso.animations.add('downward', [2], 10, true);
-
         this.legs.animations.add('stand', [0], 10, true);
         this.legs.animations.add('walk', [1, 2, 3], 6, true);
         this.legs.animations.add('backwards', [4, 5, 6], 6, true);
         this.legs.animations.add('fly', [3], 6, true);
     }
 
-    _addMarker() {
-        this.marker = this.game.add.sprite(0, -this.height / 2 - 10, 'playerMarker');
-        this.marker.anchor.setTo(0.5);
-        this.addChild(this.marker);
-    }
 
     _initLaser() {
         this._gun = this.game.add.sprite(-4, -8, 'gun');
@@ -106,12 +137,9 @@ class Player extends Phaser.Sprite {
 
     update() {
         this._gun.rotation = this.game.physics.arcade.angleToPointer(this);
-
-
         if (this.body.touching.down) {
             this.onBarrier = true;
         }
-
         if (this.game.input.worldX < this.x) {
             this.torso.scale.setTo(-1.0, 1.0);
             this._gun.scale.setTo(1.0, -1.0);
@@ -134,7 +162,6 @@ class Player extends Phaser.Sprite {
                 this.torso.animations.play('downward');
             }
         }
-
         if (this._left.isDown) {
             this.body.velocity.x = -170;
         } else if (this._right.isDown) {
@@ -146,7 +173,6 @@ class Player extends Phaser.Sprite {
             this.body.velocity.y = -270;
             this.onBarrier = false;
         }
-
         if (this.body.blocked.down || this.onBarrier) {
             if (this.body.velocity.x > 0) {
                 this.legs.animations.play('walk');

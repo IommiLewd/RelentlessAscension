@@ -16,8 +16,11 @@ class barrierGenerator extends Phaser.Sprite {
         this.spawnCycle = 1;
         this._addFirstBarrier();
         this.cycleRight = true;
+        this.spawnSignal = new Phaser.Signal();
+        this.spawnSignal.dispatch();
 
     }
+
     _addFirstBarrier() {
         this.initialSpawn = Math.random() >= 0.5;
         if (this.initialSpawn) {
@@ -38,6 +41,11 @@ class barrierGenerator extends Phaser.Sprite {
         this.barrier.body.immovable = true;
         this.barrier.body.velocity.y = this.velocity;
         this._spawnCyclic();
+    }
+
+
+    _initProps() {
+
 
     }
 
@@ -61,7 +69,6 @@ class barrierGenerator extends Phaser.Sprite {
         } else {
             this.spawnCycle--;
         }
-
         var jitter = Math.floor(Math.random() * (80 - 5 + 1)) + 5;
         jitter = Math.random() < 0.5 ? -jitter : jitter;
         this.spawnX += jitter;
@@ -84,7 +91,5 @@ class barrierGenerator extends Phaser.Sprite {
                 barrier.body.velocity.y = this.velocity;
             }
         }, this);
-
-
     }
 }

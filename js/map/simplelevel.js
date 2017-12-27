@@ -10,8 +10,8 @@ class SimpleLevel extends Phaser.State {
         this.game.world.setBounds(0, 0, 1600, 1100);
         this.game.stage.backgroundColor = "#1b2823";
         this.gradient = this.game.add.tileSprite(0, 0, this.game.world.width, this.game.world.height, 'gradient');
-        //this.background2 = this.game.add.tileSprite(0, this.game.world.height - 332, this.game.world.width, 332, 'background2');
-        //this.background = this.game.add.tileSprite(0, this.game.world.height - 212, this.game.world.width, 212, 'background');
+        this.upperBorder = this.game.add.tileSprite(0, 0, this.game.world.width, 32, 'outOfBounds');
+        this.lowerBorder = this.game.add.tileSprite(0, this.game.world.height - 32, this.game.world.width, 32, 'outOfBounds');
 
 
         this._loadCameraTarget();
@@ -19,32 +19,32 @@ class SimpleLevel extends Phaser.State {
 
 
     _addPlayer() {
-        this.player = new Player(this.game, this.game.world.width/2, 940, 'player');
+        this.player = new Player(this.game, this.game.world.width / 2, 940, 'player');
         this.allies.add(this.player);
     }
 
 
-    _addAlly(amount) {
+    //    _addAlly(amount) {
+    //        if (amount === undefined) {
+    //            amount = 2;
+    //
+    //        }
+    //        for (var i = 0; i < amount; i++) {
+    //            var aliveIndicatorY = 26 * i;
+    //            this.ally = new Ally(this.game, 100, 100, 'enemy', aliveIndicatorY);
+    //
+    //            this.allies.add(this.ally);
+    //        }
+    //    }
+
+
+    _addEnemy(x, y, amount) {
         if (amount === undefined) {
             amount = 2;
 
         }
         for (var i = 0; i < amount; i++) {
-            var aliveIndicatorY = 26 * i;
-            this.ally = new Ally(this.game, 100, 100, 'enemy', aliveIndicatorY);
-
-            this.allies.add(this.ally);
-        }
-    }
-
-
-    _addEnemy(amount) {
-        if (amount === undefined) {
-            amount = 2;
-
-        }
-        for (var i = 0; i < amount; i++) {
-            this.enemy = new Enemy(this.game, 1800, 100, 'enemy');
+            this.enemy = new Enemy(this.game, x, y, 'enemy');
             this.enemies.add(this.enemy);
             this.enemiesSpawned++;
         }
@@ -62,7 +62,7 @@ class SimpleLevel extends Phaser.State {
 
 
     _loadCameraTarget() {
-        this.cameraTarget = this.game.add.image(this.game.width/2, this.game.height/2, 'crossHair');
+        this.cameraTarget = this.game.add.image(this.game.width / 2, this.game.height / 2, 'crossHair');
         this.cameraTarget.anchor.setTo(0.5);
         this.game.camera.follow(this.cameraTarget);
     }
@@ -78,7 +78,7 @@ class SimpleLevel extends Phaser.State {
         this.explosion.x = bullet.x;
         this.explosion.y = bullet.y;
         this.explosion.on = true;
-        this.game.time.events.add(Phaser.Timer.SECOND * 0.2, this._endExplosion, this);
+        this.game.time.events.add(Phaser.Timer.SECOND * 0.5, this._endExplosion, this);
     }
 
 
@@ -88,23 +88,22 @@ class SimpleLevel extends Phaser.State {
 
     _checkCollision() {
         //       this.game.physics.arcade.overlap(this.ally.bullets, this.enemies, this.impactHandler, null, this);
-                this.physics.arcade.overlap(this.player.bullets, this.barrier.tileGroup, this._kill_bullet, function (bullet, tileGroup) {
-                    return tileGroup.collides;
-                }, this);
+        this.physics.arcade.overlap(this.player.bullets, this.barrier.tileGroup, this._kill_bullet, function (bullet, tileGroup) {
+            return tileGroup.collides;
+        }, this);
         this.game.physics.arcade.collide(this.barrier.tileGroup, this.allies, this.processHandler, this.playerOnBarrier);
-       // this.game.physics.arcade.collide(this.barrier.tileGroup, this.enemies, this.processHandler, this.playerOnBarrier);
-
-
+        this.game.physics.arcade.collide(this.barrier.tileGroup, this.enemies, this.processHandler, this.playerOnBarrier);
         this.game.physics.arcade.overlap(this.allies, this.enemies, this.allyHit);
     }
 
 
     allyHit(ally, enemy) {
-        //        ally.x = -2000;
+        //ally.x = -2000;
         // ally.aliveIndicator.x = 500;
-        ally.isDead();
-        //        ally.kill();
-
+        //ally.isDead();
+        //ally.kill();
+//        userInterface._damageTaken();
+        ally._damageTaken();
         enemy._attacking();
     }
     playerOnBarrier(ally, barrier) {
@@ -119,17 +118,17 @@ class SimpleLevel extends Phaser.State {
 
     impactHandler(bullet, enemy) {
         enemy._damageTaken();
-//        if (enemy.health < 0) {
-//            this.enemiesSpawned--;
-//            if (this.enemiesSpawned <= 0) {
-//                this._waveGenerator();
-//            }
-//        }
-        this.game.time.events.add(Phaser.Timer.SECOND * 0.03, function () {
+        //        if (enemy.health < 0) {
+        //            this.enemiesSpawned--;
+        //            if (this.enemiesSpawned <= 0) {
+        //                this._waveGenerator();
+        //            }
+        //        }
+        this.game.time.events.add(Phaser.Timer.SECOND * 0.00, function () {
             bullet.kill();
         }, this);
     }
-    
+
     _addExplosion() {
         this.explosion = this.game.add.emitter(0, 0, 100);
         this.explosion.width = 0;
@@ -162,28 +161,28 @@ class SimpleLevel extends Phaser.State {
 
 
 
-
-
-
     preload() {}
 
     create() {
+        
         this.jumpTimer = 0;
         this.selectedGun = 0;
         this.enemiesSpawned = 0;
         this._loadLevel();
         this.enemies = this.game.add.group();
         this.allies = this.game.add.group();
+        
         this._barrierGenerator();
-
-        this._addPlayer();
-
-                this._addExplosion();
-
+        this.barrier.spawnSignal.add(function(){console.log('shazbot')}, this);
         this._initUserInterface();
+        this._addPlayer();
+        this._addExplosion();
+        
 
-       // this._addAlly(5);
-       // this._addEnemy(1);
+        // this._addAlly(5);
+        this._addEnemy(800, 100, 1);
+       
+   //  this.test = this.userInterface.events.testSignal.add(this._dogFart, this.userInterface, 0);
 
 
     }
@@ -200,8 +199,8 @@ class SimpleLevel extends Phaser.State {
             console.log('Rightbuttonzargh');
         }
 
-//        this.background.tilePosition.x -= 0.25;
-//        this.background2.tilePosition.x -= 0.2;
+        //        this.background.tilePosition.x -= 0.25;
+        //        this.background2.tilePosition.x -= 0.2;
         //        this.allies.forEachAlive(function (ally) {
         //            var targetX;
         //            var targetY;
