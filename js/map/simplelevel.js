@@ -19,7 +19,7 @@ class SimpleLevel extends Phaser.State {
 
 
     _addPlayer() {
-        this.player = new Player(this.game, this.game.world.width / 2, 940, 'player');
+        this.player = new Player(this.game, this.game.world.width / 2, 920, 'player');
         this.allies.add(this.player);
     }
 
@@ -102,7 +102,7 @@ class SimpleLevel extends Phaser.State {
         // ally.aliveIndicator.x = 500;
         //ally.isDead();
         //ally.kill();
-//        userInterface._damageTaken();
+        //        userInterface._damageTaken();
         ally._damageTaken();
         enemy._attacking();
     }
@@ -159,30 +159,32 @@ class SimpleLevel extends Phaser.State {
 
 
 
-
+    _spawnEncounter(assumed) {
+        console.log(assumed);
+        this._addEnemy(assumed, this.game.world.height + 64, 1);
+    }
 
     preload() {}
 
     create() {
-        
+
         this.jumpTimer = 0;
         this.selectedGun = 0;
         this.enemiesSpawned = 0;
         this._loadLevel();
         this.enemies = this.game.add.group();
         this.allies = this.game.add.group();
-        
+
         this._barrierGenerator();
-        this.barrier.spawnSignal.add(function(){console.log('shazbot')}, this);
+        this.barrier.spawnSignal.add(this._spawnEncounter, this);
+
+        //   this.barrier.spawnSignal.add(function(){console.log('shazbot')}, this);
         this._initUserInterface();
         this._addPlayer();
         this._addExplosion();
-        
 
-        // this._addAlly(5);
-        this._addEnemy(800, 100, 1);
-       
-   //  this.test = this.userInterface.events.testSignal.add(this._dogFart, this.userInterface, 0);
+
+        //  this.test = this.userInterface.events.testSignal.add(this._dogFart, this.userInterface, 0);
 
 
     }
@@ -197,6 +199,7 @@ class SimpleLevel extends Phaser.State {
 
         if (this.game.input.activePointer.rightButton.isDown) {
             console.log('Rightbuttonzargh');
+            this.player._teleport();
         }
 
         //        this.background.tilePosition.x -= 0.25;

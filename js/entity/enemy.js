@@ -7,6 +7,7 @@ class Enemy extends Phaser.Sprite {
         this.game.physics.arcade.enableBody(this);
         this.body.gravity.y = 300;
         this.health = 100;
+        this.outOfBoundsKill = true;
         
     }
 
@@ -15,8 +16,9 @@ class Enemy extends Phaser.Sprite {
     }
 
     _damageTaken(amount) {
+          this.tint = Math.random() * 0xffffff;
         if(amount === undefined){
-            amount = 6;
+            amount = 8;
         }
         this.health -= amount;
         if(this.health < 0){
@@ -25,6 +27,9 @@ class Enemy extends Phaser.Sprite {
 
     }
     update() {
+        if(this.y < -32){
+            this.kill();
+        }
 
     }
 }

@@ -23,6 +23,12 @@ class Player extends Phaser.Sprite {
         this._initBullets();
         this._initHealth();
         this._initEnergy();
+        this.teleportInterval = 0;
+        this.jumpTimer = 0;
+        this.regen = true;
+        this.testTimer = 0;
+        this.recharge = 0;
+
     }
 
 
@@ -32,12 +38,16 @@ class Player extends Phaser.Sprite {
         this.energyBar.fixedToCamera = true;
 
     }
-    
+
     _energyHandler(amount) {
-        if(this.energy >= 0){
-        this.energy -= amount;
-       this.energyBar.width =  this.energy/100 * this.energy;
-    }
+        if (this.energy >= 0) {
+            this.energy -= amount;
+            this.energyBar.width = this.energy / 100 * this.energy;
+    
+        }
+        if (this.energy < 0) {
+            this.energy = 0;
+        }
     }
 
     _initHealth() {
@@ -76,8 +86,12 @@ class Player extends Phaser.Sprite {
 
     }
 
+
+    _teleport() {
+
+    }
     _initBullets() {
-     
+
         this.bullets = this.game.add.group();
         this.bullets.enableBody = true;
         this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
@@ -98,12 +112,12 @@ class Player extends Phaser.Sprite {
 
     }
     _fireMachinegun() {
-  
+
         this.fireRate = 70;
         this.bullet;
         this.bullets.setAll('frame', 0);
         this.randomNumber = (Math.random() - 0.5) * 2;
-        if (this.game.time.now > this._nextFire && this.bullets.countDead() > 4 && this.energy >= 0) {
+        if (this.game.time.now > this._nextFire && this.bullets.countDead() > 4) {
             this._nextFire = this.game.time.now + this.fireRate;
             this.bullet = this.bullets.getFirstDead();
             this.bullet.reset(this.x, this.y - 10);
@@ -120,7 +134,9 @@ class Player extends Phaser.Sprite {
         this.legs.animations.add('stand', [0], 10, true);
         this.legs.animations.add('walk', [1, 2, 3], 6, true);
         this.legs.animations.add('backwards', [4, 5, 6], 6, true);
-        this.legs.animations.add('fly', [3], 6, true);
+        this.legs.animations.add('flyRight', [3], 6, true);
+        this.legs.animations.add('flyRight', [3], 6, true);
+        this.legs.animations.add('flyLeft', [7], 6, true);
     }
 
 
@@ -140,6 +156,19 @@ class Player extends Phaser.Sprite {
         if (this.body.touching.down) {
             this.onBarrier = true;
         }
+
+        if(this.recharge > 0){
+            this.regen = false;
+            this.recharge--;
+        } else if(this.recharge === 0 && this.onBarrier) {
+            this.regen = true;
+        }
+        if (this.regen && this.energy < 100) {
+            this._energyHandler(-0.8);
+        }
+
+
+
         if (this.game.input.worldX < this.x) {
             this.torso.scale.setTo(-1.0, 1.0);
             this._gun.scale.setTo(1.0, -1.0);
@@ -162,6 +191,8 @@ class Player extends Phaser.Sprite {
                 this.torso.animations.play('downward');
             }
         }
+
+
         if (this._left.isDown) {
             this.body.velocity.x = -170;
         } else if (this._right.isDown) {
@@ -169,10 +200,22 @@ class Player extends Phaser.Sprite {
         } else {
             this.body.velocity.x = 0;
         }
-        if (this._up.isDown && this.body.blocked.down || this._up.isDown && this.onBarrier) {
-            this.body.velocity.y = -270;
+
+
+        if (this._up.isDown && this.body.blocked.down || this._up.isDown && this.energy > 0 && this.game.time.now > this.jumpTimer && this.onBarrier) {
+            this.jumpTimer = this.game.time.now + 800;
+            this.body.velocity.y = -170;
             this.onBarrier = false;
+
+        } else if (this._up.isDown && this.game.time.now > this.jumpTimer && this.onBarrier === false) {
+            if(this.energy > 5){
+            this._energyHandler(0.8);
+            this.body.velocity.y = -120;
+                this.recharge = 180;
         }
+    }
+
+
         if (this.body.blocked.down || this.onBarrier) {
             if (this.body.velocity.x > 0) {
                 this.legs.animations.play('walk');
@@ -182,7 +225,13 @@ class Player extends Phaser.Sprite {
                 this.legs.animations.play('stand');
             }
         } else {
-            this.legs.animations.play('fly');
+            if (this.game.input.worldX < this.x){
+ 
+                 this.legs.animations.play('flyLeft');
+            } else {
+                          this.legs.animations.play('flyRight');
+            }
+
             this.onBarrier = false;
         }
 
