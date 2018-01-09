@@ -161,7 +161,8 @@ class SimpleLevel extends Phaser.State {
 
     _spawnEncounter(assumed) {
         console.log(assumed);
-        this._addEnemy(assumed, this.game.world.height + 64, 1);
+        this._addEnemy(assumed, this.game.world.height - 64, 1);
+        console.log('enemySpawnedAss');
     }
 
     preload() {}
