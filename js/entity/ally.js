@@ -20,17 +20,13 @@ class Ally extends Phaser.Sprite {
         this.targetY = 300;
         this.distance = 1600;
 //        this.followDistance = Math.floor(Math.random() * (220 - 80 + 1) + 80);
-        this.speed = Math.floor(Math.random() * (110 - 70 + 1) + 70);
-        this.bravery = Math.floor(Math.random() * (450 - 350 + 1) + 350);
-        this.leftEvent = Math.floor(Math.random() * (190 - 70 + 1) + 70);
-        this.rightEvent = Math.floor(Math.random() * (700 - 480 + 1) + 480);
+//        this.speed = Math.floor(Math.random() * (110 - 70 + 1) + 70);
+//        this.bravery = Math.floor(Math.random() * (450 - 350 + 1) + 350);
+//        this.leftEvent = Math.floor(Math.random() * (190 - 70 + 1) + 70);
+//        this.rightEvent = Math.floor(Math.random() * (700 - 480 + 1) + 480);
         
         this.movingForward = false;
         this._initBullets();
-        this.aliveIndicatorY = 60 + number;
-        this.aliveIndicator = this.game.add.sprite(6, this.aliveIndicatorY, 'troopPoint');
-        this.aliveIndicator.fixedToCamera = true;
-
     }
 
     isDead(){
@@ -38,6 +34,9 @@ class Ally extends Phaser.Sprite {
         this.aliveIndicator.visible = false;
         this.kill();
  
+    }
+    _damageTaken(){
+        
     }
     
     
@@ -135,6 +134,11 @@ class Ally extends Phaser.Sprite {
             this.movingForward = false;
         }
 
+if(this.y < 0 -  this.height ){
+    this.kill();
+}else if(this.y > this.game.world.height){
+        this.kill();
+    }
 
 
  if(this.distance < 600){

@@ -100,7 +100,6 @@ class Player extends Phaser.Sprite {
         this.bullets.setAll('outOfBoundsKill', true);
         this.bullets.setAll('anchor.x', 0.0);
         this.bullets.setAll('anchor.y', 0.5);
-
         //  --- Disable Gravity for Each Bullet
         this.bullets.forEach(function (L) {
             L.body.allowGravity = false;
@@ -112,7 +111,6 @@ class Player extends Phaser.Sprite {
 
     }
     _fireMachinegun() {
-
         this.fireRate = 70;
         this.bullet;
         this.bullets.setAll('frame', 0);
@@ -152,6 +150,8 @@ class Player extends Phaser.Sprite {
 
 
     update() {
+        
+        
         this._gun.rotation = this.game.physics.arcade.angleToPointer(this);
         if (this.body.touching.down) {
             this.onBarrier = true;

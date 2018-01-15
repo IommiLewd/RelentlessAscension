@@ -21,6 +21,8 @@ class SimpleLevel extends Phaser.State {
     _addPlayer() {
         this.player = new Player(this.game, this.game.world.width / 2, 920, 'player');
         this.allies.add(this.player);
+        this.ally = new Ally(this.game, this.game.world.width / 2, 920, 'player');
+        this.allies.add(this.ally);
     }
 
 
@@ -161,7 +163,14 @@ class SimpleLevel extends Phaser.State {
 
     _spawnEncounter(assumed) {
         console.log(assumed);
-        this._addEnemy(assumed, this.game.world.height - 64, 1);
+        this.ally = new Ally(this.game, assumed, 920, 'player');
+        this.allies.add(this.ally);
+
+            this._addEnemy(50, this.game.world.height / 2, 1);
+            this._addEnemy(this.game.world.width - 50, this.game.world.height / 2, 1);
+        
+        // this._addEnemy(assumed - 50, this.game.world.height - 64, 1);
+        // this._addEnemy(assumed + 50, this.game.world.height - 64, 1);
         console.log('enemySpawnedAss');
     }
 
@@ -201,45 +210,53 @@ class SimpleLevel extends Phaser.State {
         if (this.game.input.activePointer.rightButton.isDown) {
             console.log('Rightbuttonzargh');
             this.player._teleport();
+            //this.barrier.velocity -= 10;
         }
-
-        //        this.background.tilePosition.x -= 0.25;
-        //        this.background2.tilePosition.x -= 0.2;
-        //        this.allies.forEachAlive(function (ally) {
-        //            var targetX;
-        //            var targetY;
-        //            var currentX;
-        //            this.lowestX = 1600;
-        //            
-        //            this.enemies.forEachAlive(function (enemy){
-        //               //currentX = this.x;
-        //                   currentX = enemy.x;
-        //                //console.log('current x is: ' + currentX + 'lowestX ' + this.lowestX);
-        //                
-        //                if(currentX < this.lowestX){
-        //                    this.lowestX = currentX;
-        //                    targetX = enemy.x;
-        //                    targetY = enemy.y;
-        //                }
-        //                           }, this)                 
-        //                                      
-        //                       ally.targetX = targetX;               
-        //                       ally.targetY = targetY;   
-        //            console.log(ally.targetY);
-        //                                      
-        //                                      
         //
-        //        }, this)
+        //                this.background.tilePosition.x -= 0.25;
+        //                this.background2.tilePosition.x -= 0.2;
+        //                this.allies.forEachAlive(function (ally) {
+        //                    var targetX;
+        //                    var targetY;
+        //                    var currentX;
+        //                    this.lowestX = 1600;
+        //                    
+        //                    this.enemies.forEachAlive(function (enemy){
+        //                       //currentX = this.x;
+        //                           currentX = enemy.x;
+        //                        //console.log('current x is: ' + currentX + 'lowestX ' + this.lowestX);
+        //                        
+        //                        if(currentX < this.lowestX){
+        //                            this.lowestX = currentX;
+        //                            targetX = enemy.x;
+        //                            targetY = enemy.y;
+        //                        }
+        //                                   }, this)                 
+        //                                              
+        //                               ally.targetX = targetX;               
+        //                               ally.targetY = targetY;   
+        //                    console.log(ally.targetY);
+        //                                              
+        //                                              
+        //        
+        //                }, this)
 
-        //        console.log(this.allies.x);
-        //        console.log(this.player.body.velocity.x);
-        //        if(this.player.body.velocity.x < 10){
-        //             this.barrier.moveRight = true;
-        //            
-        //        } else if(this.player.body.velocity.x > -100){
-        //            this.barrier.moveRight = false;
-        //              
-        //        }
+
+
+        this.enemies.forEachAlive(function (enemy) {
+            enemy.targetX = this.player.x;
+            enemy.targetY = this.player.y;
+        }, this)
+
+
+
+        if (this.player.body.velocity.x < 10) {
+            this.barrier.moveRight = true;
+
+        } else if (this.player.body.velocity.x > -100) {
+            this.barrier.moveRight = false;
+
+        }
         this.allies.forEachAlive(function (ally) {
             this.game.physics.arcade.overlap(ally.bullets, this.enemies, this.impactHandler, null, this);
             var targetX;

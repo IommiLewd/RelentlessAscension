@@ -14,7 +14,7 @@ class barrierGenerator extends Phaser.Sprite {
         this.spawnTimer = true;
         this.spawnX = this.game.world.width / 2;
         this.spawnY = 1000;
-        this.velocity = -60; // Default is -60
+        this.velocity = -80; // Default is -60
         this.spawnCycle = 1;
         this.type = 1;
         // this._addFirstBarrier();

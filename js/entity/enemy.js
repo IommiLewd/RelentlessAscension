@@ -5,10 +5,15 @@ class Enemy extends Phaser.Sprite {
         this.game.physics.arcade.enable(this);
         this.anchor.setTo(0.5, 0.5);
         this.game.physics.arcade.enableBody(this);
-        this.body.gravity.y = 300;
-        this.health = 100;
+        //this.body.gravity.y = 300;
+        this.health = 60;
         this.outOfBoundsKill = true;
-        
+        this.targetX;
+        this.targetY;
+        this.randomization = Math.random() * 50;
+        var posNeg = Math.random() < 0.5 ? -1 : 1;
+        this.randomization = this.randomization * posNeg;
+
     }
 
     _attacking() {
@@ -27,6 +32,23 @@ class Enemy extends Phaser.Sprite {
 
     }
     update() {
+  
+        
+        
+        if(this.targetY + 80 + this.randomization < this.y){
+            this.body.velocity.y = -160 + this.randomization;
+            
+        } else if(this.targetY - 80 + this.randomization > this.y){
+            this.body.velocity.y =  160 + this.randomization;
+        }
+        
+        if(this.targetX + 80 + this.randomization < this.x){
+            this.body.velocity.x = -160 + this.randomization;
+            
+        } else if(this.targetX - 80 + this.randomization > this.x){
+            this.body.velocity.x =  160 + this.randomization;
+        }
+        
         if(this.y < -32){
             this.kill();
         }

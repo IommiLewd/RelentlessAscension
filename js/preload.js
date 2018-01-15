@@ -12,7 +12,7 @@ class Preload extends Phaser.State {
         this.load.image('pointer', 'img/laserpointer.png');
 
 
-        this.load.image('enemy', 'img/enemy.png');
+        this.load.image('enemy', 'img/enemy2.png');
         //this.load.image('playerMarker', 'img/playerMarker.png');
         //this.load.image('barrier', 'img/barrier.png');
         this.load.image('barrier', 'img/barrier.png');
@@ -36,7 +36,7 @@ class Preload extends Phaser.State {
         //enemies
         //this.load.spritesheet('charger', 'img/Dynastinae.png', 180, 100, 15);
         
-        this.load.image('walker', 'img/enemies/walker.png');
+        this.load.image('walker', 'img/enemies/flier.png');
 
         //Gun related
         this.load.image('crossHair', 'img/crossHair.png');
