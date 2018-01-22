@@ -39,6 +39,11 @@ class SimpleLevel extends Phaser.State {
     //        }
     //    }
 
+    _initEnemyGroup(){
+        
+        
+        
+    }
 
     _addEnemy(x, y, amount) {
         if (amount === undefined) {
@@ -52,10 +57,6 @@ class SimpleLevel extends Phaser.State {
         }
     }
 
-
-    _mouseWheel() {
-        console.log('mousewheel fired, selectedGun is: ' + this.selectedGun);
-    }
 
 
     _initUserInterface() {
@@ -100,13 +101,8 @@ class SimpleLevel extends Phaser.State {
 
 
     allyHit(ally, enemy) {
-        //ally.x = -2000;
-        // ally.aliveIndicator.x = 500;
-        //ally.isDead();
-        //ally.kill();
-        //        userInterface._damageTaken();
         ally._damageTaken();
-        enemy._attacking();
+       // enemy._attacking();
     }
     playerOnBarrier(ally, barrier) {
 
@@ -120,12 +116,6 @@ class SimpleLevel extends Phaser.State {
 
     impactHandler(bullet, enemy) {
         enemy._damageTaken();
-        //        if (enemy.health < 0) {
-        //            this.enemiesSpawned--;
-        //            if (this.enemiesSpawned <= 0) {
-        //                this._waveGenerator();
-        //            }
-        //        }
         this.game.time.events.add(Phaser.Timer.SECOND * 0.00, function () {
             bullet.kill();
         }, this);
@@ -163,7 +153,7 @@ class SimpleLevel extends Phaser.State {
 
     _spawnEncounter(assumed) {
         console.log(assumed);
-        this.ally = new Ally(this.game, assumed, 920, 'player');
+        this.ally = new Ally(this.game, assumed, this.game.world.height - 64, 'player');
         this.allies.add(this.ally);
 
             this._addEnemy(50, this.game.world.height / 2, 1);
@@ -183,6 +173,7 @@ class SimpleLevel extends Phaser.State {
         this.enemiesSpawned = 0;
         this._loadLevel();
         this.enemies = this.game.add.group();
+
         this.allies = this.game.add.group();
 
         this._barrierGenerator();

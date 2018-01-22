@@ -5,7 +5,7 @@ class Ally extends Phaser.Sprite {
         this.game.physics.arcade.enable(this);
         this.anchor.setTo(0.5, 0.5);
         this.game.physics.arcade.enableBody(this);
-        this.body.collideWorldBounds = true;
+      //  this.body.collideWorldBounds = true;
         this.body.gravity.y = 300;
         this.torso = this.game.add.sprite(-2, -14, 'torsos');
         this.torso.anchor.setTo(0.5);
@@ -59,6 +59,7 @@ class Ally extends Phaser.Sprite {
 
 
     }
+
     _fireMachinegun() {
         /*this.player._fireWeapon();*/
         //this.fireRate = 190;

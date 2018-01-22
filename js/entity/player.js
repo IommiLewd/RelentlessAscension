@@ -87,11 +87,8 @@ class Player extends Phaser.Sprite {
     }
 
 
-    _teleport() {
-
-    }
+    
     _initBullets() {
-
         this.bullets = this.game.add.group();
         this.bullets.enableBody = true;
         this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
@@ -110,6 +107,7 @@ class Player extends Phaser.Sprite {
 
 
     }
+    
     _fireMachinegun() {
         this.fireRate = 70;
         this.bullet;
